@@ -1,4 +1,4 @@
-PROFILER_VERSION ?= 4.5
+PROFILER_VERSION ?= 4.5-bpf
 
 ifeq ($(COMMIT_TAG),true)
   PROFILER_VERSION := $(PROFILER_VERSION)-$(shell git rev-parse --short=7 HEAD)

@@ -136,6 +136,7 @@ bool Lookup::fillJavaMethodInfo(MethodInfo* mi, jmethodID method) {
     char* method_name = NULL;
     char* method_sig = NULL;
 
+    JNIEnv* jni = VM::jni();
     jvmtiEnv* jvmti = VM::jvmti();
     jvmtiError err;
 
@@ -150,7 +151,7 @@ bool Lookup::fillJavaMethodInfo(MethodInfo* mi, jmethodID method) {
     }
 
     if (method_class) {
-        _jni->DeleteLocalRef(method_class);
+        jni->DeleteLocalRef(method_class);
     }
     jvmti->Deallocate((unsigned char*)method_sig);
     jvmti->Deallocate((unsigned char*)method_name);

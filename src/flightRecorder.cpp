@@ -30,7 +30,6 @@
 #include "userEvents.h"
 #include "vmStructs.h"
 
-
 INCLUDE_HELPER_CLASS(JFR_SYNC_NAME, JFR_SYNC_CLASS, "one/profiler/JfrSync")
 
 static void JNICALL JfrSync_stopProfiler(JNIEnv* env, jclass cls) {
@@ -337,6 +336,7 @@ class Recording {
 
         writeNativeLibraries(_buf);
 
+
         for (int i = 0; i < CONCURRENCY_LEVEL; i++) {
             flush(&_buf[i]);
         }
@@ -361,14 +361,14 @@ class Recording {
         off_t cpool_start = lseek(_fd, 0, SEEK_CUR);
         writeCpool(_buf, _last_cpool_offset == 0 ? 0 : _last_cpool_offset - cpool_start);
         flush(_buf);
+
         off_t cpool_end = lseek(_fd, 0, SEEK_CUR);
         _last_cpool_offset = cpool_start;
-
         // Patch cpool size field
         _buf->putVar32(0, cpool_end - cpool_start);
+
         ssize_t result = pwrite(_fd, _buf->data(), 5, cpool_start);
         (void)result;
-
 
         // Patch chunk header
         _buf->put64(last ? cpool_end - _chunk_start : 0);
@@ -933,7 +933,6 @@ class Recording {
     void writeStackTraces(Buffer* buf) {
         std::map<u32, CallTrace*> traces;
         Profiler::instance()->_call_trace_storage.collectTraces(traces);
-
         writePoolHeader(buf, T_STACK_TRACE, traces.size());
         for (std::map<u32, CallTrace*>::const_iterator it = traces.begin(); it != traces.end(); ++it) {
             CallTrace* trace = it->second;
@@ -993,7 +992,7 @@ class Recording {
         for (std::map<u32, const char*>::const_iterator it = classes.begin(); it != classes.end(); ++it) {
             buf->putVar32(it->first);
             buf->putVar32(0);  // classLoader
-            buf->putVar64(_lookup._symbols.indexOf(it->second));
+            buf->putVar32(static_cast<u32>(_lookup._symbols.indexOf(it->second)));
             buf->putVar32(_lookup.getPackage(it->second));
             buf->putVar32(0);  // access flags
             flushIfNeeded(buf);
@@ -1003,8 +1002,8 @@ class Recording {
     void writePackages(Buffer* buf) {
         writePoolHeader(buf, T_PACKAGE, _lookup._packages.size());
         _lookup._packages.forEachOrdered([&] (size_t idx, const std::string& s) {
-            buf->putVar64(idx);
-            buf->putVar64(_lookup._symbols.indexOf(s));
+            buf->putVar32(static_cast<u32>(idx));
+            buf->putVar32(static_cast<u32>(_lookup._symbols.indexOf(s)));
             flushIfNeeded(buf);
         });
     }
@@ -1013,7 +1012,7 @@ class Recording {
         writePoolHeader(buf, T_SYMBOL, _lookup._symbols.size());
         _lookup._symbols.forEachOrdered([&] (size_t idx, const std::string& s) {
             flushIfNeeded(buf, RECORDING_BUFFER_LIMIT - MAX_STRING_LENGTH);
-            buf->putVar64(idx);
+            buf->putVar32(static_cast<u32>(idx));
             buf->putUtf8(s.c_str());
         });
     }

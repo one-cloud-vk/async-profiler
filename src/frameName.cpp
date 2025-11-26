@@ -262,6 +262,9 @@ const char* FrameName::name(ASGCT_CallFrame& frame, bool for_matching) {
         case BCI_LOCK:
         case BCI_PARK: {
             const char* symbol = _class_names[(uintptr_t)frame.method_id];
+            if (symbol == NULL) {
+                return "[unknown]";
+            }
             javaClassName(symbol, strlen(symbol), _style | STYLE_DOTTED);
             if (!for_matching && !(_style & STYLE_DOTTED)) {
                 _str += frame.bci == BCI_ALLOC_OUTSIDE_TLAB ? "_[k]" : "_[i]";

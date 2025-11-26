@@ -47,7 +47,6 @@ class CallTraceStorage {
 
     LinearAllocator _allocator;
     LongHashTable* _current_table;
-    size_t _used_memory;
     size_t _mem_limit;
     u64 _overflow;
 
@@ -59,7 +58,6 @@ class CallTraceStorage {
     ~CallTraceStorage();
 
     void clear(size_t mem_limit);
-    u32 capacity();
     size_t usedMemory();
     u64 overflow() { return _overflow; }
     Chunk* trimAllocator();

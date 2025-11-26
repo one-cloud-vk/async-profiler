@@ -18,8 +18,12 @@
 
 struct DictTable;
 
+struct DictKey {
+    bool mark;
+    char key[0];
+};
 struct DictRow {
-    char* keys[CELLS];
+    DictKey* keys[CELLS];
     DictTable* next;
 };
 

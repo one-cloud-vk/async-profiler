@@ -156,6 +156,11 @@ Error Arguments::parse(const char* args) {
                     _event = value;
                 }
 
+            CASE("daysplit")
+                if (value == NULL || (_daysplit = parseTimeout(value)) == -1) {
+                    msg = "Invalid day split num";
+                }
+
             CASE("timeout")
                 if (value == NULL || (_timeout = parseTimeout(value)) == -1) {
                     msg = "Invalid timeout";
@@ -310,9 +315,9 @@ Error Arguments::parse(const char* args) {
                 if (_file == NULL) {
                     _file = "/one/logs/%{cloud_image}-%t.jfr";
                 }
-                if (_timeout == 0) {
-                    _loop = true;
-                    _timeout = 0xff0000ff;  // rotate at 00:00
+                if (_timeout == 0 && _loop == 0) {
+                    _daysplit = 3;
+                    _loop = 0xff0000ff;  // rotate at 00:00, 08:00, 16:00
                 }
                 if (_chunk_time == 0) {
                     _chunk_time = 300;  // 5 min

@@ -165,6 +165,7 @@ class Arguments {
     std::vector<const char*> _trace;
     int _timeout;
     int _loop;
+    int _daysplit;
     size_t _mem_limit;
     long _interval;
     long _alloc;
@@ -230,6 +231,7 @@ class Arguments {
         _trace(),
         _timeout(0),
         _loop(0),
+        _daysplit(0),
         _mem_limit(0),
         _interval(0),
         _alloc(-1),

@@ -300,6 +300,7 @@ Error Arguments::parse(const char* args) {
 
             CASE("cloud")
                 // Meta option for continuous eBPF-assisted cloud profiling
+                _cloud = true;
                 if (_action == ACTION_NONE) {
                     _action = ACTION_START;
                 }
@@ -530,6 +531,13 @@ const char* Arguments::expandFilePattern(const char* pattern) {
                     env_key[p - pattern] = 0;
                     const char* env_value = getenv(env_key);
                     if (env_value != NULL) {
+                        if (_cloud && strcmp(env_key, "cloud_image") == 0) {
+                            // In cloud mode for cloud_image, use only the last part after '/'
+                            const char* last_slash = strrchr(env_value, '/');
+                            if (last_slash != NULL) {
+                                env_value = last_slash + 1;
+                            }
+                        }
                         ptr += snprintf(ptr, end - ptr, "%s", env_value);
                         pattern = p + 1;
                         continue;

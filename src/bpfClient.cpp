@@ -3,11 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "bpfClient.h"
+
+#ifdef __linux__
+
 #include <sched.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include "event.h"
-#include "bpfClient.h"
 #include "fdtransferClient.h"
 #include "os.h"
 #include "tsc.h"
@@ -125,5 +128,31 @@ const char* BpfClient::schedPolicy(int tid) {
     if (trace == NULL || trace->tid != tid || trace->sched_policy < SCHED_BATCH) {
         return "SCHED_OTHER";
     }
-    return trace->sched_policy >= SCHED_IDLE ? "SCHED_IDLE" : "SCHED_BATCH"; 
+    return trace->sched_policy >= SCHED_IDLE ? "SCHED_IDLE" : "SCHED_BATCH";
 }
+
+#else
+
+void BpfClient::signalHandler(int signo, siginfo_t* siginfo, void* ucontext) {
+}
+
+Error BpfClient::check(Arguments& args) {
+    return Error("BPF client is supported only on Linux");
+}
+
+Error BpfClient::start(Arguments& args) {
+    return Error("BPF client is supported only on Linux");
+}
+
+void BpfClient::stop() {
+}
+
+int BpfClient::walk(int tid, void* ucontext, const void** callchain, int max_depth) {
+    return 0;
+}
+
+const char* BpfClient::schedPolicy(int tid) {
+    return "SCHED_OTHER";
+}
+
+#endif // __linux__

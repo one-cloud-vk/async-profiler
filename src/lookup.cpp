@@ -11,6 +11,13 @@
 #include "profiler.h"
 #include "vmStructs.h"
 
+Lookup::Lookup() :
+    _method_map(),
+    _classes(Profiler::instance()->classMap()),
+    _packages(1),
+    _symbols(1) {
+}
+
 jint MethodInfo::getLineNumber(jint bci) {
     if (_line_number_table_size == 0) {
         return 0;

@@ -6,6 +6,7 @@
 #ifndef _TRAP_H
 #define _TRAP_H
 
+#include <stddef.h>
 #include <stdint.h>
 #include "arch.h"
 

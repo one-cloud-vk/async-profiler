@@ -46,12 +46,7 @@ class Lookup {
     Index _packages;
     Index _symbols;
 
-    Lookup() :
-        _method_map(),
-        _classes(Profiler::instance()->classMap()),
-        _packages(1),
-        _symbols(1) {
-    }
+    Lookup();
 
     MethodInfo* resolveMethod(ASGCT_CallFrame& frame);
     u32 getPackage(const char* class_name);
